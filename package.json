@@ -1,0 +1,11 @@
+{
+  "name": "syncwave",
+  "version": "1.0.0",
+  "scripts": {
+    "install": "concurrently \"cd client && npm i\" \"cd server && npm i\"",
+    "start": "concurrently \"cd client && npm start\" \"cd server && npm start\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1"
+  }
+}
