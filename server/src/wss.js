@@ -68,6 +68,9 @@ wss.on("connection", async (ws, req) => {
     consumer?.disconnect();
     console.log({ error });
   });
+
+  // Signal client connected status
+  ws.send(JSON.stringify({ flag: "connected" }));
 });
 
 // Check socket connections
@@ -77,7 +80,7 @@ const interval = setInterval(() => {
     if (!ws.isAlive) return ws.terminate();
     ws.isAlive = false;
     ws.ping();
-    ws.send(JSON.stringify({ value: "ping" }));
+    ws.send(JSON.stringify({ flag: "ping" }));
   }
 }, 10000);
 
