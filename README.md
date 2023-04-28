@@ -1,2 +1,9 @@
-# SyncWave
-A Playground for Music Collaboration
+# **SyncWave**
+
+## A Playground for Music Collaboration
+
+## **Run Project**
+
+### `npm install`
+
+### `npm start`
