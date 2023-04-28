@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
-import { Kafka } from "kafkajs";
+import KafkaJS from "kafkajs";
 
 dotenvExpand.expand(dotenv.config());
 
@@ -10,13 +10,14 @@ const { KAFKA_SERVER_URL } = process.env;
 const { KAFKA_USER } = process.env;
 const { KAFKA_PASS } = process.env;
 
-// const kafka = new Kafka({
-//   clientId: "syncwave",
-//   brokers: [KAFKA_SERVER_URL],
-//   ssl: true,
-//   sasl: {
-//     mechanism: "scram-sha-256",
-//     username: KAFKA_USER,
-//     password: KAFKA_PASS,
-//   }
-// });
+export const kafka = new KafkaJS.Kafka({
+  clientId: "syncwave",
+  brokers: [KAFKA_SERVER_URL],
+  ssl: true,
+  sasl: {
+    mechanism: "plain",
+    username: KAFKA_USER,
+    password: KAFKA_PASS,
+  },
+  logLevel: KafkaJS.logLevel.WARN,
+});

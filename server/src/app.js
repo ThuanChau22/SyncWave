@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 
+import session from "./session.js";
 import { WEB_DOMAIN } from "./config.js";
 
 // Initiate express app
@@ -25,6 +26,7 @@ appRoutes.get("/", (_, res) => {
 });
 
 // API endpoints
+appRoutes.use("/session", session);
 app.use("/api", appRoutes);
 
 app.use((req, res) => {

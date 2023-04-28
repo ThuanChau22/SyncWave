@@ -6,6 +6,6 @@ app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
 }).on("upgrade", (request, socket, head) => {
   wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit("connection", ws);
+    wss.emit("connection", ws, request);
   });
 });
