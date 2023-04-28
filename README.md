@@ -1,6 +1,6 @@
 # **SyncWave**
 
-## A Playground for Music Collaboration
+A Playground for Music Collaboration
 
 ## **Run Project**
 
