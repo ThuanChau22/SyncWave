@@ -31,8 +31,8 @@ wss.on("connection", async (ws, req) => {
   const consumerId = encode(Buffer.from(uuid()));
   const consumer = kafka.consumer({ groupId: `${sessionId}${consumerId}` });
   await consumer.connect();
-  consumer.subscribe({ topic: sessionId });
-  consumer.run({
+  await consumer.subscribe({ topic: sessionId });
+  await consumer.run({
     eachMessage: ({ message }) => {
       const value = message.value?.toString();
       ws.send(JSON.stringify({ value }));
@@ -46,11 +46,11 @@ wss.on("connection", async (ws, req) => {
   });
 
   // Handle incoming message
-  ws.on("message", (data) => {
+  ws.on("message", async (data) => {
     data = JSON.parse(data.toString());
     const key = consumerId;
     const value = data?.value;
-    producer.send({
+    await producer.send({
       topic: sessionId,
       messages: [{ key, value }],
       compression: CompressionTypes.Snappy,
