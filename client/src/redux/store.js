@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 
-import { webSocketSlice } from "redux/slices/webSocketSlice"
+import { sessionSlice } from "redux/slices/sessionSlice"
 
 export const store = configureStore({
   reducer: {
-    [webSocketSlice.name]: webSocketSlice.reducer,
+    [sessionSlice.name]: sessionSlice.reducer,
   },
 });
