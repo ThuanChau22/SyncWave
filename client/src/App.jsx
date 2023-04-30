@@ -38,7 +38,7 @@ const App = () => {
       };
       webSocket.onopen = () => {
         checkPingTimeout();
-      }
+      };
       webSocket.onmessage = ({ data }) => {
         data = JSON.parse(data);
         if (data?.flag === "connected") {
@@ -48,10 +48,10 @@ const App = () => {
         } else {
           dispatch(sessionStateSetMessage(data.value));
         }
-      }
+      };
       webSocket.onerror = (e) => {
         console.log({ e });
-      }
+      };
       webSocket.onclose = (e) => {
         clearTimeout(pingTimeout);
         dispatch(sessionStateSetStatus(Disconnected));
@@ -68,14 +68,15 @@ const App = () => {
 
   return (
     <div>
-      {sessionStatus.value === Connecting
-        ? <p>Connecting</p>
-        : sessionStatus.value === Connected
-          ? <MusicSheet />
-          : <Home />
-      }
+      {sessionStatus.value === Connecting ? (
+        <p>Connecting</p>
+      ) : sessionStatus.value === Connected ? (
+        <MusicSheet />
+      ) : (
+        <Home />
+      )}
     </div>
   );
-}
+};
 
 export default App;

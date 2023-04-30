@@ -4,8 +4,9 @@ import { TextField } from "@mui/material";
 import { Typography } from "@mui/material";
 
 import { selectSessionId } from "redux/slices/sessionSlice";
-import { sessionStateSetInput, } from "redux/slices/sessionSlice";
 import { selectSessionMessage } from "redux/slices/sessionSlice";
+import { sessionStateSetInput } from "redux/slices/sessionSlice";
+import { Piano }from "piano/components/Piano";
 
 const MusicSheet = () => {
   const sessionId = useSelector(selectSessionId);
@@ -19,6 +20,7 @@ const MusicSheet = () => {
 
   return (
     <Container>
+      <Piano />
       <Typography>Session Id: {sessionId}</Typography>
       <TextField type="text" value={message} onChange={handleOnChange} />
       <Typography>Message: {message}</Typography>

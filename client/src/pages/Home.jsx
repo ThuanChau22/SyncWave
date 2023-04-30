@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@mui/material";
 import { Container } from "@mui/material";
-import { TextField } from '@mui/material';
+import { TextField } from "@mui/material";
 import { useDispatch } from "react-redux";
 
 import { sessionCreate } from "redux/slices/sessionSlice";
@@ -17,14 +17,16 @@ const Home = () => {
 
   const handleJoinSession = async () => {
     dispatch(sessionJoin(sessionId));
-  }
+  };
 
   return (
-    <Container sx={{
-      alignItems: "center",
-      display: "flex",
-      flexDirection: "column",
-    }}>
+    <Container
+      sx={{
+        alignItems: "center",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Button onClick={handleCreateSession}>Create Session</Button>
       <TextField
         label="Session ID"
