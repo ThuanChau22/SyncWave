@@ -11,7 +11,7 @@ const router = express.Router();
  */
 router.post("/", async (_, res) => {
   try {
-    const sessionId = encode(Buffer.from(uuid()));
+    const sessionId = "test";// encode(Buffer.from(uuid()));
     const admin = kafka.admin();
     await admin.connect();
     await admin.createTopics({

@@ -11,11 +11,11 @@ const { CompressionTypes, CompressionCodecs } = KafkaJS;
 CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
 
 // Initiate web socket server
-const wss = new WebSocketServer({ noServer: true });
+const wss = new WebSocketServer({ path: "/", noServer: true });
 
 wss.on("connection", async (ws, req) => {
   // Extract session id from client request
-  const params = req?.url?.split("?")[1];
+  const [_, params] = req?.url?.split("?");
   const searchParams = new URLSearchParams(params);
   const sessionId = searchParams.get("sessionId");
 
