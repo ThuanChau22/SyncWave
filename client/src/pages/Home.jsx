@@ -7,6 +7,8 @@ import { useDispatch } from "react-redux";
 import { sessionCreate } from "redux/slices/sessionSlice";
 import { sessionJoin } from "redux/slices/sessionSlice";
 
+import {PianoManager} from "../InteractivePiano/PianoManager";
+
 const Home = () => {
   const [sessionId, setSessionId] = useState("");
   const dispatch = useDispatch();
@@ -27,6 +29,7 @@ const Home = () => {
         flexDirection: "column",
       }}
     >
+      <PianoManager/>
       <Button onClick={handleCreateSession}>Create Session</Button>
       <TextField
         label="Session ID"
