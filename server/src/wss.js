@@ -14,63 +14,78 @@ CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
 const wss = new WebSocketServer({ path: "/", noServer: true });
 
 wss.on("connection", async (ws, req) => {
-  // Extract session id from client request
-  const [_, params] = req?.url?.split("?");
-  const searchParams = new URLSearchParams(params);
-  const sessionId = searchParams.get("sessionId");
+  try {
+    // Extract session id from client request
+    const [_, params] = req?.url?.split("?");
+    const searchParams = new URLSearchParams(params);
+    const sessionId = searchParams.get("sessionId");
 
-  // Close socket if no session id provided
-  if (!sessionId) return ws.close();
+    // Close socket if no session id provided
+    if (!sessionId) return ws.close();
 
-  // Setup producer
-  const { Partitioners: { LegacyPartitioner } } = KafkaJS;
-  const producer = kafka.producer({ createPartitioner: LegacyPartitioner });
-  await producer.connect();
+    // Signal client connecting status
+    ws.send(JSON.stringify({ status: "connecting" }));
 
-  // Setup consumer
-  const consumerId = encode(Buffer.from(uuid()));
-  const consumer = kafka.consumer({ groupId: `${sessionId}${consumerId}` });
-  await consumer.connect();
-  await consumer.subscribe({ topic: sessionId });
-  await consumer.run({
-    eachMessage: ({ message }) => {
-      const value = message.value?.toString();
-      ws.send(JSON.stringify({ value }));
-    }
-  });
+    // Setup producer
+    const { Partitioners: { LegacyPartitioner } } = KafkaJS;
+    const producer = kafka.producer({ createPartitioner: LegacyPartitioner });
+    await producer.connect();
 
-  // Validate socket connection
-  ws.isAlive = true;
-  ws.on("pong", () => {
-    ws.isAlive = true;
-  });
-
-  // Handle incoming message
-  ws.on("message", async (data) => {
-    data = JSON.parse(data.toString());
-    const key = consumerId;
-    const value = data?.value;
-    await producer.send({
-      topic: sessionId,
-      messages: [{ key, value }],
-      compression: CompressionTypes.Snappy,
+    // Setup consumer
+    const consumerId = encode(Buffer.from(uuid()));
+    const consumer = kafka.consumer({ groupId: `${sessionId}${consumerId}` });
+    await consumer.connect();
+    await consumer.subscribe({ topic: sessionId });
+    await consumer.run({
+      eachMessage: ({ message }) => {
+        try {
+          const value = message.value.toString();
+          ws.send(JSON.stringify({ value }));
+        } catch (error) {
+          console.log({ error });
+        }
+      }
     });
-  });
 
-  // Handle socket on error
-  ws.on("error", (error) => {
+    // Validate socket connection
+    ws.isAlive = true;
+    ws.on("pong", () => {
+      ws.isAlive = true;
+    });
+
+    // Handle incoming message
+    ws.on("message", async (data) => {
+      try {
+        await producer.send({
+          topic: sessionId,
+          messages: [{
+            key: consumerId,
+            value: data,
+          }],
+          compression: CompressionTypes.Snappy,
+        });
+      } catch (error) {
+        console.log({ error });
+      }
+    });
+
+    // Handle socket on error
+    ws.on("error", (error) => {
+      console.log({ error });
+    });
+
+    // Handle socket on close
+    ws.on("close", (error) => {
+      producer?.disconnect();
+      consumer?.disconnect();
+      console.log({ error });
+    });
+
+    // Signal client connected status
+    ws.send(JSON.stringify({ status: "connected" }));
+  } catch (error) {
     console.log({ error });
-  });
-
-  // Handle socket on close
-  ws.on("close", (error) => {
-    producer?.disconnect();
-    consumer?.disconnect();
-    console.log({ error });
-  });
-
-  // Signal client connected status
-  ws.send(JSON.stringify({ flag: "connected" }));
+  }
 });
 
 // Check socket connections
@@ -80,7 +95,7 @@ const interval = setInterval(() => {
     if (!ws.isAlive) return ws.terminate();
     ws.isAlive = false;
     ws.ping();
-    ws.send(JSON.stringify({ flag: "ping" }));
+    ws.send(JSON.stringify({ status: "ping" }));
   }
 }, 10000);
 

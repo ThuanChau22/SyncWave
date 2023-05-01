@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Typography } from "@mui/material";
 
 import Home from "pages/Home";
 import MusicSheet from "pages/MusicSheet";
@@ -13,7 +14,7 @@ import { selectSessionInput } from "redux/slices/sessionSlice";
 const App = () => {
   const sessionId = useSelector(selectSessionId);
   const sessionStatus = useSelector(selectSessionStatus);
-  const { Connected, Connecting, Disconnected } = sessionStatus.options;
+  const sessionStatusOptions = sessionStatus.options;
   const sessionInput = useSelector(selectSessionInput);
   const [webSocket, setWebSocket] = useState(null);
   const dispatch = useDispatch();
@@ -40,13 +41,22 @@ const App = () => {
         checkPingTimeout();
       };
       webSocket.onmessage = ({ data }) => {
-        data = JSON.parse(data);
-        if (data?.flag === "connected") {
-          dispatch(sessionStateSetStatus(Connected));
-        } else if (data?.flag === "ping") {
-          checkPingTimeout();
-        } else {
-          dispatch(sessionStateSetMessage(data.value));
+        try {
+          data = JSON.parse(data);
+          if (data.status === "connecting") {
+            const { Connecting } = sessionStatusOptions;
+            dispatch(sessionStateSetStatus(Connecting));
+          } else if (data.status === "connected") {
+            const { Connected } = sessionStatusOptions;
+            dispatch(sessionStateSetStatus(Connected));
+          } else if (data.status === "ping") {
+            checkPingTimeout();
+          } else {
+            const message = JSON.parse(data.value)
+            dispatch(sessionStateSetMessage(message));
+          }
+        } catch (error) {
+          console.log({ error });
         }
       };
       webSocket.onerror = (e) => {
@@ -54,23 +64,24 @@ const App = () => {
       };
       webSocket.onclose = (e) => {
         clearTimeout(pingTimeout);
+        const { Disconnected } = sessionStatusOptions;
         dispatch(sessionStateSetStatus(Disconnected));
         console.log({ e });
       };
     }
-  }, [dispatch, webSocket, Connected, Disconnected]);
+  }, [dispatch, sessionStatusOptions, webSocket]);
 
   useEffect(() => {
     if (webSocket && webSocket.readyState === webSocket.OPEN) {
-      webSocket.send(JSON.stringify({ value: sessionInput }));
+      webSocket.send(JSON.stringify(sessionInput));
     }
   }, [webSocket, sessionInput]);
 
   return (
     <div>
-      {sessionStatus.value === Connecting ? (
-        <p>Connecting</p>
-      ) : sessionStatus.value === Connected ? (
+      {sessionStatus.value === sessionStatusOptions.Connecting ? (
+        <Typography>Connecting</Typography>
+      ) : sessionStatus.value === sessionStatusOptions.Connected ? (
         <MusicSheet />
       ) : (
         <Home />

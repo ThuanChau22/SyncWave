@@ -12,7 +12,7 @@ const sessionAPI = "/api/session";
 const sessionSlice = createSlice({
   name: "session",
   initialState: {
-    id: "",
+    id: "test",
     status: {
       value: "init",
       options: {
@@ -22,8 +22,8 @@ const sessionSlice = createSlice({
         Disconnected: "disconnected",
       },
     },
-    input: "",
-    message: "",
+    input: {},
+    message: {},
   },
   reducers: {
     sessionStateSetId(state, action) {
