@@ -72,44 +72,12 @@ function PianoKey({
   );
 }
 
-export default function InteractivePiano({PianoKeyUp, PianoKeyDown, triggerNoteOnSound, triggerNoteOffSound, noteNameToPlay}) {
-
-  const HandlePianoKeyUp = (note) => {
-    //console.log("test interactive piano fire: " + note);
-    
-    PianoKeyUp(note);
-  }
-  const HandlePianoKeyDown = (note) => {
-    PianoKeyDown(note);
-  }
-
-  useEffect(() => {
-    if (triggerNoteOnSound) {
-      console.log("call from parent; triggered in interactive piano");
-    }
-  }, [triggerNoteOnSound]);
-
-  useEffect(() => {
-    if (triggerNoteOffSound) {
-      console.log("call from parent; triggered in interactive piano");
-    }
-  }, [triggerNoteOffSound]);
-
-  useEffect(() => {
-    if (noteNameToPlay) {
-      //console.log("call from parent; triggered in interactive piano");
-    }
-  }, [noteNameToPlay]);
+export default function InteractivePiano() {
 
 
   return (
     <PianoContainer >
       <Piano
-        noteNameToPlay={noteNameToPlay}
-        triggerNoteOnSound = {triggerNoteOnSound}
-        triggerNoteOffSound = {triggerNoteOffSound}
-        PianoKeyUp={HandlePianoKeyUp}
-        PianoKeyDown={HandlePianoKeyDown}
         startNote={'C4'}
         endNote={'B5'}
         renderPianoKey={PianoKey}

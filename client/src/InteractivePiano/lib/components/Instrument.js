@@ -1,5 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import InstrumentAudio from './InstrumentAudio';
+import React, { useState, useEffect } from "react";
+import InstrumentAudio from "./InstrumentAudio";
+
+import { WebMidi } from "webmidi";
+
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  NOTES,
+  VALID_KEYS,
+  KEY_TO_NOTE,
+  MIDI_TO_NOTE,
+  NOTE_TO_KEY,
+  NOTE_TO_MIDI,
+} from "../constants/constants";
+
+import { sessionStateSetInput } from "redux/slices/sessionSlice";
+import { selectSessionMessage } from "redux/slices/sessionSlice";
 
 function isRegularKey(event) {
   return !event.ctrlKey && !event.metaKey && !event.shiftKey;
@@ -7,15 +23,25 @@ function isRegularKey(event) {
 
 export default function Instrument(props) {
   const [notesPlaying, setNotesPlaying] = useState([]);
-  const { triggerNoteOnSound, triggerNoteOffSound, noteNameToPlay, keyboardMap, renderInstrument, renderAudio: CustomInstrumentAudio } = props;
+  const {
+    triggerNoteOnSound,
+    triggerNoteOffSound,
+    noteNameToPlay,
+    keyboardMap,
+    renderInstrument,
+    renderAudio: CustomInstrumentAudio,
+  } = props;
+
+  const dispatch = useDispatch();
+  const message = useSelector(selectSessionMessage);
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
 
@@ -23,12 +49,51 @@ export default function Instrument(props) {
     return keyboardMap[keyboardKey.toUpperCase()];
   }
 
+  useEffect(() => {
+    // Enable webmidi
+    const enableMidi = async () => {
+      await WebMidi.enable();
+      WebMidi.inputs.forEach((input) => {
+        //for each input
+        input.addListener("midimessage", (event) => {
+          dispatch(sessionStateSetInput(event.message.data.toString()));
+        });
+      });
+    };
+    enableMidi();
+  }, []);
+
+  useEffect(() => {
+    // MIDI message
+    console.log({ message });
+
+    const [STATUS, PITCH, VELOCITY] = message
+      .split(",")
+      .map((e) => parseInt(e));
+
+    const noteName = MIDI_TO_NOTE[PITCH]; //Get the note name from the midi message
+    if (noteName == null) return; //incase of unknown midi note, ignore
+    if (VELOCITY > 0) {
+      //start playing note
+      startPlayingNote(noteName);
+    } //ENDOF NOTE ON
+    if (VELOCITY === 0) {
+      //stop playing note
+      stopPlayingNote(noteName);
+    } //ENDOF NOTE OFF
+  }, [message]);
+
   function handleKeyDown(event) {
     if (isRegularKey(event) && !event.repeat) {
       const note = getNoteFromKeyboardKey(event.key);
       if (note) {
         //startPlayingNote(note);
-        props.PianoKeyDown(note);
+        const midi = NOTE_TO_MIDI[note]; //Get the midi value that corresponds to the note
+        const velocity = 100; // How hard the note is pressed
+        const status = 144; // Note on
+        const message = [status, midi, velocity];
+
+        dispatch(sessionStateSetInput(message.toString()));
       }
     }
   }
@@ -38,36 +103,25 @@ export default function Instrument(props) {
       const note = getNoteFromKeyboardKey(event.key);
       if (note) {
         //stopPlayingNote(note);
-        props.PianoKeyUp(note);
+        const midi = NOTE_TO_MIDI[note]; //Get the midi value that corresponds to the note
+        const velocity = 0; // How hard the note is pressed
+        const status = 128; // Note on
+        const message = [status, midi, velocity];
+
+        dispatch(sessionStateSetInput(message.toString()));
       }
     }
   }
 
   function startPlayingNote(note) {
-    
-    setNotesPlaying(notesPlaying => [...notesPlaying, note]);
+    setNotesPlaying((notesPlaying) => [...notesPlaying, note]);
   }
 
   function stopPlayingNote(note) {
-    
-    setNotesPlaying(notesPlaying => notesPlaying.filter(notePlaying => notePlaying !== note));
+    setNotesPlaying((notesPlaying) =>
+      notesPlaying.filter((notePlaying) => notePlaying !== note)
+    );
   }
-
-  useEffect(() => {
-    if (triggerNoteOnSound) {
-      console.log("playing this note: " + noteNameToPlay);
-      startPlayingNote(noteNameToPlay);
-    }
-
-  }, [triggerNoteOnSound]);
-
-  useEffect(() => {
-    if (triggerNoteOffSound) {
-      console.log("stopping this note from playing: " + noteNameToPlay);
-      stopPlayingNote(noteNameToPlay);
-      console.log("notes playing: ", notesPlaying);
-    }
-  }, [triggerNoteOffSound]);
 
   const AudioComponent = CustomInstrumentAudio || InstrumentAudio;
 
