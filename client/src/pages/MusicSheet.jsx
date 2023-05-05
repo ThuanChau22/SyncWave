@@ -1,40 +1,47 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Button } from "@mui/material";
 import { Container } from "@mui/material";
 import { Typography } from "@mui/material";
 
+import { midiMessageStateSetInput } from "redux/slices/midiMessageSlice";
+import { selectMidiMessageMessage } from "redux/slices/midiMessageSlice";
+import { sessionStateSetStatus } from "redux/slices/sessionSlice";
 import { selectSessionId } from "redux/slices/sessionSlice";
-import { selectSessionMessage } from "redux/slices/sessionSlice";
-import { sessionStateSetInput } from "redux/slices/sessionSlice";
+import { selectSessionUserId } from "redux/slices/sessionSlice";
+import { selectSessionStatus } from "redux/slices/sessionSlice";
+
 // import { Piano } from "piano/Piano";
 
 const MusicSheet = () => {
   const sessionId = useSelector(selectSessionId);
-  const message = useSelector(selectSessionMessage);
+  const userId = useSelector(selectSessionUserId);
+  const sessionStatus = useSelector(selectSessionStatus);
+  const message = useSelector(selectMidiMessageMessage);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const handleKeyDown = ({ key, repeat }) => {
-      if (!repeat) {
-        console.log({ source: "post", key });
-        dispatch(sessionStateSetInput({ key }));
-      }
+    window.onkeydown = ({ key, repeat }) => {
+      if (repeat) return;
+      dispatch(midiMessageStateSetInput({ key }));
     };
-    window.onkeydown = handleKeyDown;
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.onkeydown = null;
     };
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log({ source: "get", ...message });
-  }, [message])
+  const handleEndSession = () => {
+    const { Disconnected } = sessionStatus.options;
+    dispatch(sessionStateSetStatus(Disconnected));
+  };
 
   return (
     <Container>
       {/* <Piano /> */}
       <Typography>Session Id: {sessionId}</Typography>
+      <Typography>User Id: {userId}</Typography>
       <Typography>Message: {JSON.stringify(message)}</Typography>
+      <Button variant="outlined" onClick={handleEndSession} >End Session</Button>
     </Container>
   );
 };
