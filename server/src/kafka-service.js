@@ -1,6 +1,8 @@
 import KafkaJS from "kafkajs";
 import SnappyCodec from "kafkajs-snappy";
 import ms from "ms";
+import { encode } from "safe-base64";
+import { v4 as uuid } from "uuid";
 
 import { KAFKA_SERVER_URL, KAFKA_USER, KAFKA_PASS } from "./config.js";
 
@@ -61,8 +63,8 @@ kafkaService.connectProducer = async () => {
   return producer;
 };
 
-kafkaService.connectConsumer = async (groupId) => {
-  const config = { groupId };
+kafkaService.connectConsumer = async () => {
+  const config = { groupId: encode(Buffer.from(uuid())) };
   const consumer = kafkaService.instance.consumer(config);
   await consumer.connect();
   return consumer;

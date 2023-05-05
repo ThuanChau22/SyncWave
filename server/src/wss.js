@@ -1,5 +1,4 @@
 import KafkaJS from "kafkajs";
-import CryptoJs from "crypto-js";
 import { WebSocketServer } from "ws";
 
 import kafkaService from "./kafka-service.js";
@@ -26,10 +25,9 @@ wss.on("connection", async (ws, req) => {
     }));
 
     // Connect kafka producer and consumer
-    const groupId = CryptoJs.SHA256(`${sessionId}${userId}`).toString();
     const [producer, consumer] = await Promise.all([
       kafkaService.connectProducer(),
-      kafkaService.connectConsumer(groupId),
+      kafkaService.connectConsumer(),
     ]);
 
     // Set topic subscriptions
