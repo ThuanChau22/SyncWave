@@ -10,8 +10,7 @@ import { sessionStateSetStatus } from "redux/slices/sessionSlice";
 import { selectSessionId } from "redux/slices/sessionSlice";
 import { selectSessionUserId } from "redux/slices/sessionSlice";
 import { selectSessionStatus } from "redux/slices/sessionSlice";
-
-// import { Piano } from "piano/Piano";
+import InteractivePiano from "../InteractivePiano/InteractivePiano";
 
 const MusicSheet = () => {
   const sessionId = useSelector(selectSessionId);
@@ -37,7 +36,7 @@ const MusicSheet = () => {
 
   return (
     <Container>
-      {/* <Piano /> */}
+      <InteractivePiano />
       <Typography>Session Id: {sessionId}</Typography>
       <Typography>User Id: {userId}</Typography>
       <Typography>Message: {JSON.stringify(message)}</Typography>

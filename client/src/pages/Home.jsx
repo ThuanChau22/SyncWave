@@ -17,6 +17,7 @@ const { REACT_APP_API_DOMAIN } = process.env;
 const axiosInstance = axios.create({ baseURL: REACT_APP_API_DOMAIN || "/" });
 const sessionAPI = "/api/session";
 
+
 const Home = () => {
   const sessionStatus = useSelector(selectSessionStatus);
   const { Connecting } = sessionStatus.options;
