@@ -12,7 +12,8 @@ import { midiMessageStateSetMessage } from "redux/slices/midiMessageSlice";
 import { midiMessageStateClear } from "redux/slices/midiMessageSlice";
 import { selectMidiMessageId } from "redux/slices/midiMessageSlice";
 import { selectMidiMessageInput } from "redux/slices/midiMessageSlice";
-import { participantStateSetMessage } from "redux/slices/participantSlice";
+import { participantStateAdd } from "redux/slices/participantSlice";
+import { participantStateRemove } from "redux/slices/participantSlice";
 import { participantStateClear } from "redux/slices/participantSlice";
 import { selectParticipantId } from "redux/slices/participantSlice";
 import { sessionStateSetStatus } from "redux/slices/sessionSlice";
@@ -56,7 +57,11 @@ const App = () => {
   const handleSetMessage = useCallback(({ source, userId, message }) => {
     if (source === participantId) {
       const value = JSON.parse(message);
-      dispatch(participantStateSetMessage({ userId, value }));
+      if (value.active) {
+        dispatch(participantStateAdd({ userId, value }));
+      } else {
+        dispatch(participantStateRemove(userId));
+      }
     }
     if (source === midiMessageId) {
       const value = JSON.parse(message);
@@ -96,26 +101,26 @@ const App = () => {
   }, [dispatch, readyState, getWebSocket, sessionStatus, Disconnected]);
   return (
     <Container maxWidth={false}>
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        {sessionStatus.value === Connecting ? (
+      {sessionStatus.value === Connecting ? (
+        <Box
+          sx={{
+            marginTop: 20,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <WaveLoader
             color={theme.palette.primary.main}
             loading={true}
             size={50}
           />
-        ) : sessionStatus.value === Connected ? (
-          <MusicSheet />
-        ) : (
-          <Home />
-        )}
-      </Box>
+        </Box>
+      ) : sessionStatus.value === Connected ? (
+        <MusicSheet />
+      ) : (
+        <Home />
+      )}
     </Container>
   );
 };

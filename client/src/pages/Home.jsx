@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { Box } from "@mui/material";
 import { Container } from "@mui/material";
 import { TextField } from "@mui/material";
 import { Typography } from "@mui/material";
@@ -10,17 +11,13 @@ import { midiMessageStateSetId } from "redux/slices/midiMessageSlice";
 import { participantStateSetId } from "redux/slices/participantSlice";
 import { sessionStateSetId } from "redux/slices/sessionSlice";
 import { sessionStateSetUserId } from "redux/slices/sessionSlice";
-import { selectSessionStatus } from "redux/slices/sessionSlice";
 
 // Session API endpoint
 const { REACT_APP_API_DOMAIN } = process.env;
 const axiosInstance = axios.create({ baseURL: REACT_APP_API_DOMAIN || "/" });
 const sessionAPI = "/api/session";
 
-
 const Home = () => {
-  const sessionStatus = useSelector(selectSessionStatus);
-  const { Connecting } = sessionStatus.options;
   const [sessionId, setSessionId] = useState("");
   const [createLoading, setCreateLoading] = useState(false);
   const [joinLoading, setJoinLoading] = useState(false);
@@ -61,37 +58,44 @@ const Home = () => {
   return (
     <Container
       sx={{
+        marginTop: 20,
         alignItems: "center",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <LoadingButton
-        size="small"
-        onClick={handleCreateSession}
-        loading={createLoading}
-        loadingIndicator="Loading…"
-        variant="outlined"
+      <Box>
+        <TextField
+          size="small"
+          label="Session ID"
+          type="text"
+          onChange={(e) => setSessionId(e.target.value)}
+        />
+        <LoadingButton
+          size="large"
+          onClick={handleJoinSession}
+          loading={joinLoading}
+          loadingIndicator="Loading…"
+          variant="outlined"
+        >
+          <Typography>Join Session</Typography>
+        </LoadingButton>
+      </Box>
+      <Box
+        sx={{
+          marginTop: 5,
+        }}
       >
-        <Typography>Create Session</Typography>
-      </LoadingButton>
-      <TextField
-        label="Session ID"
-        type="text"
-        onChange={(e) => setSessionId(e.target.value)}
-      />
-      <LoadingButton
-        size="small"
-        onClick={handleJoinSession}
-        loading={joinLoading}
-        loadingIndicator="Loading…"
-        variant="outlined"
-      >
-        <Typography>Join Session</Typography>
-      </LoadingButton>
-      {sessionStatus.value === Connecting && (
-        <Typography>Connecting</Typography>
-      )}
+        <LoadingButton
+          size="large"
+          onClick={handleCreateSession}
+          loading={createLoading}
+          loadingIndicator="Loading…"
+          variant="outlined"
+        >
+          <Typography>Create Session</Typography>
+        </LoadingButton>
+      </Box>
     </Container>
   );
 };

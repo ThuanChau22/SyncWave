@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import Piano from './lib';
 import './InteractivePiano.css';
 
@@ -17,9 +17,8 @@ function AccidentalKey({ isPlaying, text, eventHandlers }) {
   return (
     <div className={'interactive-piano__accidental-key__wrapper'}>
       <button
-        className={`interactive-piano__accidental-key ${
-          isPlaying ? 'interactive-piano__accidental-key--playing' : ''
-        }`}
+        className={`interactive-piano__accidental-key ${isPlaying ? 'interactive-piano__accidental-key--playing' : ''
+          }`}
         {...eventHandlers}
       >
         <div className={'interactive-piano__text'}>{text}</div>
@@ -31,9 +30,8 @@ function AccidentalKey({ isPlaying, text, eventHandlers }) {
 function NaturalKey({ isPlaying, text, eventHandlers }) {
   return (
     <button
-      className={`interactive-piano__natural-key ${
-        isPlaying ? 'interactive-piano__natural-key--playing' : ''
-      }`}
+      className={`interactive-piano__natural-key ${isPlaying ? 'interactive-piano__natural-key--playing' : ''
+        }`}
       {...eventHandlers}
     >
       <div className={'interactive-piano__text'}>{text}</div>
@@ -72,12 +70,11 @@ function PianoKey({
   );
 }
 
-export default function InteractivePiano() {
-
-
+export default function InteractivePiano({ userId }) {
   return (
     <PianoContainer >
       <Piano
+        userId={userId}
         startNote={'C4'}
         endNote={'B5'}
         renderPianoKey={PianoKey}

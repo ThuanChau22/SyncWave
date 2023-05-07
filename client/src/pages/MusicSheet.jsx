@@ -1,33 +1,26 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react"
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { Box } from "@mui/material";
 import { Button } from "@mui/material";
 import { Container } from "@mui/material";
 import { Typography } from "@mui/material";
 
-import { midiMessageStateSetInput } from "redux/slices/midiMessageSlice";
-import { selectMidiMessageMessage } from "redux/slices/midiMessageSlice";
+import { selectParticipants } from "redux/slices/participantSlice";
 import { sessionStateSetStatus } from "redux/slices/sessionSlice";
 import { selectSessionId } from "redux/slices/sessionSlice";
-import { selectSessionUserId } from "redux/slices/sessionSlice";
 import { selectSessionStatus } from "redux/slices/sessionSlice";
-import InteractivePiano from "../InteractivePiano/InteractivePiano";
+import Participant from "components/Participant";
 
 const MusicSheet = () => {
   const sessionId = useSelector(selectSessionId);
-  const userId = useSelector(selectSessionUserId);
   const sessionStatus = useSelector(selectSessionStatus);
-  const message = useSelector(selectMidiMessageMessage);
+  const participants = useSelector(selectParticipants);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    window.onkeydown = ({ key, repeat }) => {
-      if (repeat) return;
-      dispatch(midiMessageStateSetInput({ key }));
-    };
-    return () => {
-      window.onkeydown = null;
-    };
-  }, [dispatch]);
+    console.log(participants);
+  }, [participants]);
 
   const handleEndSession = () => {
     const { Disconnected } = sessionStatus.options;
@@ -35,13 +28,34 @@ const MusicSheet = () => {
   };
 
   return (
-    <Container>
-      <InteractivePiano />
-      <Typography>Session Id: {sessionId}</Typography>
-      <Typography>User Id: {userId}</Typography>
-      <Typography>Message: {JSON.stringify(message)}</Typography>
-      <Button variant="outlined" onClick={handleEndSession} >End Session</Button>
-    </Container>
+    <Container
+      sx={{
+        marginTop: 5,
+        alignItems: "center",
+        display: "flex",
+        flexDirection: "column",
+      }}>
+      <Typography>SESSION ID: {sessionId}</Typography>
+      {
+        participants.map((participant) => {
+          const { id } = participant;
+          return <Participant key={id} userId={id} />
+        })
+      }
+      <Box
+        sx={{
+          alignItems: "center",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Button
+          variant="outlined"
+          onClick={handleEndSession} >
+          End Session
+        </Button>
+      </Box>
+    </Container >
   );
 };
 

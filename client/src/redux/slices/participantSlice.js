@@ -6,14 +6,18 @@ const participantSlice = createSlice({
   name: "participant",
   initialState: participantEntityAdapter.getInitialState({
     id: "",
-    message: {},
   }),
   reducers: {
     participantStateSetId(state, action) {
       state.id = action.payload;
     },
-    participantStateSetMessage(state, action) {
-      state.message = action.payload;
+    participantStateAdd(state, action) {
+      const { userId: id, value } = action.payload;
+      participantEntityAdapter.addOne(state, { id, ...value });
+    },
+    participantStateRemove(state, action) {
+      const userId = action.payload;
+      participantEntityAdapter.removeOne(state, userId);
     },
     participantStateClear() {
       return participantSlice.getInitialState();
@@ -23,7 +27,8 @@ const participantSlice = createSlice({
 
 // Participant actions
 const { participantStateSetId } = participantSlice.actions;
-const { participantStateSetMessage } = participantSlice.actions;
+const { participantStateAdd } = participantSlice.actions;
+const { participantStateRemove } = participantSlice.actions;
 const { participantStateClear } = participantSlice.actions;
 
 // Participant selectors
@@ -33,15 +38,15 @@ const selectParticipant = (state) => {
 const selectParticipantId = (state) => {
   return selectParticipant(state).id;
 };
-const selectParticipantMessage = (state) => {
-  return selectParticipant(state).message;
-};
+const participantSelectors = participantEntityAdapter.getSelectors(selectParticipant);
+const selectParticipants = participantSelectors.selectAll;
 
 export {
   participantSlice,
   participantStateSetId,
-  participantStateSetMessage,
+  participantStateAdd,
+  participantStateRemove,
   participantStateClear,
   selectParticipantId,
-  selectParticipantMessage,
+  selectParticipants,
 }

@@ -1,16 +1,18 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import Instrument from './Instrument';
 import isAccidentalNote from '../utils/isAccidentalNote';
 import getNotesBetween from '../utils/getNotesBetween';
 import getKeyboardShortcutForNote from '../utils/getKeyboardShortcutsForNote';
 
 export default function Piano({
-  startNote, endNote, keyboardMap, renderPianoKey, renderAudio, 
+  userId,
+  startNote, endNote, keyboardMap,
+  renderPianoKey, renderAudio,
 }) {
   const notes = getNotesBetween(startNote, endNote);
- 
   return (
     <Instrument
+      userId={userId}
       instrument={'acoustic_grand_piano'}
       keyboardMap={keyboardMap}
       renderInstrument={({ notesPlaying, onPlayNoteStart, onPlayNoteEnd }) =>
