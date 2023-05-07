@@ -1,18 +1,11 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const { REACT_APP_API_DOMAIN } = process.env;
-
-// Session API endpoint
-const axiosInstance = axios.create({ baseURL: REACT_APP_API_DOMAIN || "/" });
-const sessionAPI = "/api/session";
 
 // Session slice
 const sessionSlice = createSlice({
   name: "session",
   initialState: {
     id: "",
+    userId: "",
     status: {
       value: "init",
       options: {
@@ -22,8 +15,6 @@ const sessionSlice = createSlice({
         Disconnected: "disconnected",
       },
     },
-    input: "",
-    message: "",
   },
   reducers: {
     sessionStateSetId(state, action) {
@@ -32,15 +23,10 @@ const sessionSlice = createSlice({
     sessionStateSetStatus(state, action) {
       state.status.value = action.payload;
     },
-    sessionStateSetInput(state, action) {
-      state.input = action.payload;
+    sessionStateSetUserId(state, action) {
+      state.userId = action.payload;
     },
-    sessionStateSetMessage(state, action) {
-      state.message = action.payload;
-    },
-    sessionStateClear(state) {
-      state.webSocket?.close();
-      clearTimeout(state.pingTimeout);
+    sessionStateClear() {
       return sessionSlice.getInitialState();
     },
   },
@@ -49,34 +35,8 @@ const sessionSlice = createSlice({
 // Session actions
 const { sessionStateSetId } = sessionSlice.actions;
 const { sessionStateSetStatus } = sessionSlice.actions;
-const { sessionStateSetInput } = sessionSlice.actions;
-const { sessionStateSetMessage } = sessionSlice.actions;
+const { sessionStateSetUserId } = sessionSlice.actions;
 const { sessionStateClear } = sessionSlice.actions;
-
-// Create a new session
-const sessionCreate = createAsyncThunk(
-  `${sessionSlice.name}/create`,
-  async (_, { dispatch }) => {
-    try {
-      const { data } = await axiosInstance.post(sessionAPI);
-      dispatch(sessionStateSetId(data.sessionId));
-    } catch (error) {
-      console.log({ error });
-    }
-  }
-);
-
-// Join an existing session
-const sessionJoin = createAsyncThunk(
-  `${sessionSlice.name}/join`,
-  async (sessionId, { dispatch }) => {
-    try {
-      dispatch(sessionStateSetId(sessionId));
-    } catch (error) {
-      console.log({ error });
-    }
-  }
-);
 
 // Session selectors
 const selectSession = (state) => {
@@ -88,23 +48,17 @@ const selectSessionId = (state) => {
 const selectSessionStatus = (state) => {
   return selectSession(state).status;
 };
-const selectSessionInput = (state) => {
-  return selectSession(state).input;
-};
-const selectSessionMessage = (state) => {
-  return selectSession(state).message;
+const selectSessionUserId = (state) => {
+  return selectSession(state).userId;
 };
 
 export {
   sessionSlice,
+  sessionStateSetId,
   sessionStateSetStatus,
-  sessionStateSetInput,
-  sessionStateSetMessage,
+  sessionStateSetUserId,
   sessionStateClear,
-  sessionCreate,
-  sessionJoin,
   selectSessionId,
   selectSessionStatus,
-  selectSessionInput,
-  selectSessionMessage,
+  selectSessionUserId,
 }

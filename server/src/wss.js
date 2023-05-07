@@ -1,88 +1,139 @@
 import KafkaJS from "kafkajs";
-import SnappyCodec from "kafkajs-snappy";
-import { encode } from "safe-base64";
-import { v4 as uuid } from "uuid";
 import { WebSocketServer } from "ws";
 
-import { kafka } from "./config.js";
-
-// Apply compression codec
-const { CompressionTypes, CompressionCodecs } = KafkaJS;
-CompressionCodecs[CompressionTypes.Snappy] = SnappyCodec
+import kafkaService from "./kafka-service.js";
 
 // Initiate web socket server
 const wss = new WebSocketServer({ path: "/", noServer: true });
 
+// Handle socket connection
 wss.on("connection", async (ws, req) => {
-  // Extract session id from client request
-  const [_, params] = req?.url?.split("?");
-  const searchParams = new URLSearchParams(params);
-  const sessionId = searchParams.get("sessionId");
+  try {
+    // Extract session id from client request
+    const [_, params] = req?.url?.split("?");
+    const searchParams = new URLSearchParams(params);
+    const sessionId = searchParams.get("sessionId");
+    const userId = searchParams.get("userId");
 
-  // Close socket if no session id provided
-  if (!sessionId) return ws.close();
+    // Close socket if no session id provided
+    if (!sessionId || !userId) return ws.close(1000);
 
-  // Setup producer
-  const { Partitioners: { LegacyPartitioner } } = KafkaJS;
-  const producer = kafka.producer({ createPartitioner: LegacyPartitioner });
-  await producer.connect();
+    // Signal connecting
+    ws.send(JSON.stringify({
+      source: sessionId,
+      message: "connecting",
+    }));
 
-  // Setup consumer
-  const consumerId = encode(Buffer.from(uuid()));
-  const consumer = kafka.consumer({ groupId: `${sessionId}${consumerId}` });
-  await consumer.connect();
-  await consumer.subscribe({ topic: sessionId });
-  await consumer.run({
-    eachMessage: ({ message }) => {
-      const value = message.value?.toString();
-      ws.send(JSON.stringify({ value }));
-    }
-  });
+    // Connect kafka producer and consumer
+    const [producer, consumer] = await Promise.all([
+      kafkaService.connectProducer(),
+      kafkaService.connectConsumer(),
+    ]);
 
-  // Validate socket connection
-  ws.isAlive = true;
-  ws.on("pong", () => {
-    ws.isAlive = true;
-  });
-
-  // Handle incoming message
-  ws.on("message", async (data) => {
-    data = JSON.parse(data.toString());
-    const key = consumerId;
-    const value = data?.value;
-    await producer.send({
+    // Set topic subscriptions
+    const userStatus = kafkaService.getTopicId({
+      prefix: kafkaService.topics.UserStatus,
       topic: sessionId,
-      messages: [{ key, value }],
-      compression: CompressionTypes.Snappy,
     });
-  });
+    const midiMessage = kafkaService.getTopicId({
+      prefix: kafkaService.topics.MidiMessage,
+      topic: sessionId,
+    });
+    await Promise.all([
+      consumer.subscribe({ topics: [userStatus], fromBeginning: true }),
+      consumer.subscribe({ topics: [midiMessage], fromBeginning: false }),
+    ]);
 
-  // Handle socket on error
-  ws.on("error", (error) => {
+    // Set user active
+    const value = JSON.stringify({ active: true });
+    await producer.send({
+      topic: userStatus,
+      messages: [{ key: userId, value }],
+      compression: KafkaJS.CompressionTypes.Snappy,
+    });
+
+    // Send consumed message to client
+    await consumer.run({
+      eachMessage: ({ topic, message }) => {
+        try {
+          ws.send(JSON.stringify({
+            source: topic,
+            userId: message.key.toString(),
+            message: message.value.toString(),
+          }));
+        } catch (error) {
+          console.log({ error });
+        }
+      }
+    });
+
+    // Validate socket connection
+    ws.isAlive = true;
+    ws.on("pong", () => ws.isAlive = true);
+
+    // Handle incoming message
+    ws.on("message", async (data) => {
+      try {
+        const { message } = JSON.parse(data);
+        const value = JSON.stringify(message);
+        await producer.send({
+          topic: midiMessage,
+          messages: [{ key: userId, value }],
+          compression: KafkaJS.CompressionTypes.Snappy,
+        });
+      } catch (error) {
+        console.log({ error });
+      }
+    });
+
+    // Handle socket on error
+    ws.on("error", (error) => {
+      console.log({ error });
+    });
+
+    // Handle socket on close
+    ws.on("close", async () => {
+      try {
+        // Set user inactive
+        const value = JSON.stringify({ active: false });
+        await producer.send({
+          topic: userStatus,
+          messages: [{ key: userId, value }],
+          compression: KafkaJS.CompressionTypes.Snappy,
+        });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        await Promise.all([
+          producer.disconnect(),
+          consumer.disconnect(),
+        ]);
+      }
+    });
+
+    // Signal connected
+    ws.send(JSON.stringify({
+      source: sessionId,
+      message: "connected",
+    }));
+  } catch (error) {
     console.log({ error });
-  });
-
-  // Handle socket on close
-  ws.on("close", (error) => {
-    producer?.disconnect();
-    consumer?.disconnect();
-    console.log({ error });
-  });
-
-  // Signal client connected status
-  ws.send(JSON.stringify({ flag: "connected" }));
+  }
 });
 
 // Check socket connections
+const delay = 10000 // 10 seconds
 const interval = setInterval(() => {
   for (const ws of wss.clients) {
     // Terminate socket if no response
-    if (!ws.isAlive) return ws.terminate();
+    if (!ws.isAlive) {
+      return ws.terminate();
+    };
+    // Ping server and client
     ws.isAlive = false;
     ws.ping();
-    ws.send(JSON.stringify({ flag: "ping" }));
   }
-}, 10000);
+}, delay);
 
 // Handle socket server on close
 wss.on("close", () => {

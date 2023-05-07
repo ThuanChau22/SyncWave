@@ -1,31 +1,46 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Button } from "@mui/material";
 import { Container } from "@mui/material";
-import { TextField } from "@mui/material";
 import { Typography } from "@mui/material";
 
+import { midiMessageStateSetInput } from "redux/slices/midiMessageSlice";
+import { selectMidiMessageMessage } from "redux/slices/midiMessageSlice";
+import { sessionStateSetStatus } from "redux/slices/sessionSlice";
 import { selectSessionId } from "redux/slices/sessionSlice";
-import { selectSessionMessage } from "redux/slices/sessionSlice";
-import { sessionStateSetInput } from "redux/slices/sessionSlice";
-
+import { selectSessionUserId } from "redux/slices/sessionSlice";
+import { selectSessionStatus } from "redux/slices/sessionSlice";
 import InteractivePiano from "../InteractivePiano/InteractivePiano";
-
 
 const MusicSheet = () => {
   const sessionId = useSelector(selectSessionId);
-  const message = useSelector(selectSessionMessage);
+  const userId = useSelector(selectSessionUserId);
+  const sessionStatus = useSelector(selectSessionStatus);
+  const message = useSelector(selectMidiMessageMessage);
   const dispatch = useDispatch();
 
-  const handleOnChange = (e) => {
-    const { value } = e.target;
-    dispatch(sessionStateSetInput(value));
+  useEffect(() => {
+    window.onkeydown = ({ key, repeat }) => {
+      if (repeat) return;
+      dispatch(midiMessageStateSetInput({ key }));
+    };
+    return () => {
+      window.onkeydown = null;
+    };
+  }, [dispatch]);
+
+  const handleEndSession = () => {
+    const { Disconnected } = sessionStatus.options;
+    dispatch(sessionStateSetStatus(Disconnected));
   };
 
   return (
     <Container>
       <InteractivePiano />
       <Typography>Session Id: {sessionId}</Typography>
-      <TextField type="text" value={message} onChange={handleOnChange} />
-      <Typography>Message: {message}</Typography>
+      <Typography>User Id: {userId}</Typography>
+      <Typography>Message: {JSON.stringify(message)}</Typography>
+      <Button variant="outlined" onClick={handleEndSession} >End Session</Button>
     </Container>
   );
 };
