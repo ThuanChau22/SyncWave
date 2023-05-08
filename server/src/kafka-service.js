@@ -25,8 +25,8 @@ kafkaService.instance = new KafkaJS.Kafka({
 });
 
 kafkaService.topics = {
-  UserStatus: "USER-STATUS",
-  MidiMessage: "MIDI-MESSAGE",
+  UserStatus: "USER-STATUS",   // { key: userId, value: { active:true/false } }
+  MidiMessage: "MIDI-MESSAGE", // { key: userId, value: { status, pitch, velocity } }
 };
 
 kafkaService.getTopicId = ({ topic, prefix = "", suffix = "" } = {}) => {

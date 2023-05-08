@@ -1,14 +1,13 @@
-import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 // Midi Message slice
-const midiMessageEntityAdapter = createEntityAdapter();
 const midiMessageSlice = createSlice({
   name: "midi-message",
-  initialState: midiMessageEntityAdapter.getInitialState({
+  initialState: {
     id: "",
     input: {},
     message: {},
-  }),
+  },
   reducers: {
     midiMessageStateSetId(state, action) {
       state.id = action.payload;

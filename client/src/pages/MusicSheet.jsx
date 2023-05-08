@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
@@ -17,10 +16,6 @@ const MusicSheet = () => {
   const sessionStatus = useSelector(selectSessionStatus);
   const participants = useSelector(selectParticipants);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    console.log(participants);
-  }, [participants]);
 
   const handleEndSession = () => {
     const { Disconnected } = sessionStatus.options;
