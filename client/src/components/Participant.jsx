@@ -3,27 +3,37 @@ import { Container } from "@mui/material";
 import { Typography } from "@mui/material";
 
 import InteractivePiano from "../InteractivePiano/InteractivePiano";
+import PianoRoll from "../InteractivePiano/PianoRoll"
 
 const Participant = ({ userId }) => {
   return (
     <Container
-      maxWidth="md"
+      //maxWidth="md"
       sx={{
         marginBottom: 3,
-        alignItems: "center",
+        alignItems: "start",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "row",
+        marginLeft: -10,
+        backgroundColor: "#252730",
+        borderRadius: 5,
+        shadowBlur: 1,
+        shadowColor: "rgba(0, 0, 0, 0.25)",
+        position: "absolute",
+        width: "100%",
+       
       }}
+      maxWidth= {false}
     >
+
+    
+      <InteractivePiano userId={userId} />
       <Box
         sx={{
-          marginTop: 5,
-          marginBottom: 2,
+          marginLeft: 1,
         }}
-      >
-        <Typography>USER ID: {userId}</Typography>
-      </Box>
-      <InteractivePiano userId={userId} />
+      />
+      <PianoRoll/>
     </Container>
   );
 };

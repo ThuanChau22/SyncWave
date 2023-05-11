@@ -5,6 +5,7 @@ import { Container } from "@mui/material";
 import { TextField } from "@mui/material";
 import { Typography } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
+import { inputLabelClasses } from "@mui/material/InputLabel";
 import axios from "axios";
 
 import { midiMessageStateSetId } from "redux/slices/midiMessageSlice";
@@ -68,7 +69,18 @@ const Home = () => {
         <TextField
           size="small"
           label="Session ID"
+          
           type="text"
+          InputLabelProps={{
+            sx: {
+              // set the color of the label when not shrinked
+              color: "white",
+              [`&.${inputLabelClasses.shrink}`]: {
+                // set the color of the label when shrinked (usually when the TextField is focused)
+                color: "rgb(205, 225, 215)"
+              }
+            }
+          }}
           onChange={(e) => setSessionId(e.target.value)}
         />
         <LoadingButton

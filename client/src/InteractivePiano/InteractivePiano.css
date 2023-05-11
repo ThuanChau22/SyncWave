@@ -20,6 +20,21 @@
   width: 0;
 }
 
+
+.interactive-piano__accidental-key__roll {
+  cursor: pointer;
+  background: #aa0d0d;
+  width: 50px;
+  height: 180px;
+  margin: 0 2px;
+  border-radius: 0 0 3px 3px;
+  border: none;
+  padding: 10px;
+  outline: none;
+  box-sizing: border-box;
+  color: #444;
+}
+
 .interactive-piano__accidental-key {
   position: absolute;
   transform: translateX(-50%);
@@ -53,6 +68,20 @@
   outline: none;
   box-sizing: border-box;
   color: #444;
+}
+
+.interactive-piano__natural-key--roll {
+  cursor: pointer;
+  background: #9a5c5c;
+  width: 50px;
+  height: 180px;
+  margin: 0 2px;
+  border-radius: 0 0 3px 3px;
+  border: none;
+  padding: 0px;
+  outline: none;
+  box-sizing: border-box;
+  color: #2f2d2d;
 }
 
 .interactive-piano__natural-key--playing {

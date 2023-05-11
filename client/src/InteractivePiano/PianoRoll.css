@@ -1,0 +1,7 @@
+body {background:black}
+.pianoroll {
+  /* height:50%;
+  width:50%; */
+  box-sizing: border-box;
+  color: #444;
+}

@@ -26,18 +26,11 @@ const MusicSheet = () => {
     <Container
       sx={{
         marginTop: 5,
-        alignItems: "center",
+       
         display: "flex",
         flexDirection: "column",
       }}>
-      <Typography>SESSION ID: {sessionId}</Typography>
-      {
-        participants.map((participant) => {
-          const { id } = participant;
-          return <Participant key={id} userId={id} />
-        })
-      }
-      <Box
+        <Box
         sx={{
           alignItems: "center",
           display: "flex",
@@ -49,6 +42,20 @@ const MusicSheet = () => {
           onClick={handleEndSession} >
           End Session
         </Button>
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+      {
+        participants.map((participant) => {
+          const { id } = participant;
+          return <Participant key={id} userId={id} />
+        })
+      }
       </Box>
     </Container >
   );

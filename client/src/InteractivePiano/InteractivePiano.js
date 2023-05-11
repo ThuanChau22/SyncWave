@@ -22,7 +22,10 @@ function AccidentalKey({ isPlaying, text, eventHandlers }) {
         {...eventHandlers}
       >
         <div className={'interactive-piano__text'}>{text}</div>
+
+        
       </button>
+      
     </div>
   );
 }
@@ -35,6 +38,7 @@ function NaturalKey({ isPlaying, text, eventHandlers }) {
       {...eventHandlers}
     >
       <div className={'interactive-piano__text'}>{text}</div>
+      
     </button>
   );
 }

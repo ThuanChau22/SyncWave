@@ -22,6 +22,8 @@ import { selectSessionId } from "redux/slices/sessionSlice";
 import { selectSessionStatus } from "redux/slices/sessionSlice";
 import { selectSessionUserId } from "redux/slices/sessionSlice";
 
+import ResponsiveAppBar from "components/ResponsiveAppBar";
+
 const App = () => {
   const theme = useTheme();
   const { REACT_APP_WEBSOCKET_DOMAIN } = process.env;
@@ -99,15 +101,19 @@ const App = () => {
       dispatch(sessionStateClear());
     }
   }, [dispatch, readyState, getWebSocket, sessionStatus, Disconnected]);
+
+
+
+
   return (
-    <Container maxWidth={false}>
+    <Container >
+      <ResponsiveAppBar/>
       {sessionStatus.value === Connecting ? (
         <Box
           sx={{
             marginTop: 20,
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
           }}
         >
           <WaveLoader
