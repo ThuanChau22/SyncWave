@@ -11,6 +11,15 @@ import { selectSessionId } from "redux/slices/sessionSlice";
 import { selectSessionStatus } from "redux/slices/sessionSlice";
 import Participant from "components/Participant";
 
+import { Recording } from "InteractivePiano/Recording";
+
+import * as pixi from "pixi.js"
+
+// Create the application
+const app = new pixi.Application();
+// Add the view to the DOM
+document.body.appendChild(app.view);
+
 const MusicSheet = () => {
   const sessionId = useSelector(selectSessionId);
   const sessionStatus = useSelector(selectSessionStatus);
@@ -22,6 +31,8 @@ const MusicSheet = () => {
     dispatch(sessionStateSetStatus(Disconnected));
   };
 
+  
+
   return (
     <Container
       sx={{
@@ -31,10 +42,12 @@ const MusicSheet = () => {
         flexDirection: "column",
       }}>
       <Typography>SESSION ID: {sessionId}</Typography>
+
+
       {
         participants.map((participant) => {
           const { id } = participant;
-          return <Participant key={id} userId={id} />
+          return (<Participant key={id} userId={id} app={app}/>)
         })
       }
       <Box
@@ -49,6 +62,7 @@ const MusicSheet = () => {
           onClick={handleEndSession} >
           End Session
         </Button>
+        
       </Box>
     </Container >
   );

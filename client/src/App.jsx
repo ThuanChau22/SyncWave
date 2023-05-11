@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { WaveLoader } from "react-loaders-kit";
@@ -22,7 +22,25 @@ import { selectSessionId } from "redux/slices/sessionSlice";
 import { selectSessionStatus } from "redux/slices/sessionSlice";
 import { selectSessionUserId } from "redux/slices/sessionSlice";
 
-const App = () => {
+import { selectNoteData } from "redux/slices/pixiAppSlice";
+
+import { setNoteData } from "redux/slices/pixiAppSlice";
+
+import * as pixi from 'pixi.js';
+import {selectRenderer} from "redux/slices/pixiAppSlice";
+import {setRenderer } from "redux/slices/pixiAppSlice";
+
+import {Recording} from "InteractivePiano/Recording";
+import pixiPianoRoll from "./InteractivePiano/PianoRoll/pixiPianoRoll.js";
+
+import PixiCanvas from "./InteractivePiano/PianoRoll/PixiCanvas.js";
+
+
+import ButtonGroup from 'InteractivePiano/PianoRoll/ButtonGroup';
+
+import PianoRoll from "./InteractivePiano/PianoRoll/PianoRoll.js";
+
+const App = (props) => {
   const theme = useTheme();
   const { REACT_APP_WEBSOCKET_DOMAIN } = process.env;
   const sessionId = useSelector(selectSessionId);
@@ -32,6 +50,10 @@ const App = () => {
   const participantId = useSelector(selectParticipantId);
   const midiMessageId = useSelector(selectMidiMessageId);
   const midiMessageInput = useSelector(selectMidiMessageInput);
+
+  
+  //const noteData = useSelector(selectNoteData);
+
   const {
     readyState, lastJsonMessage,
     sendJsonMessage, getWebSocket,
@@ -99,6 +121,39 @@ const App = () => {
       dispatch(sessionStateClear());
     }
   }, [dispatch, readyState, getWebSocket, sessionStatus, Disconnected]);
+
+
+
+
+  const [pianoRoll, setPianoRoll] = useState(true);
+
+
+  // const pixiRenderer = useSelector(selectRenderer);
+  // //const dispatch = useDispatch();
+
+  // useEffect(() => {
+  //   const renderer = new pixi.Renderer(1920, 1080, {
+  //     antialias: true,
+  //     autoResize: true,
+  //   });
+  //   dispatch(setRenderer(renderer));
+  // }, [dispatch]);
+
+
+  const [state, setState] = useState(0);
+  //const [noteData, setNoteData] = useState([]);
+  const playbackRef = useRef();
+
+  
+
+
+  const handleSetNoteData = (notes) => {
+    console.log("before: " + notes);
+    dispatch(setNoteData(notes));
+    //console.log(setNoteData(notes));
+    console.log("after: " + notes);
+  };
+
   return (
     <Container maxWidth={false}>
       {sessionStatus.value === Connecting ? (
@@ -117,10 +172,37 @@ const App = () => {
           />
         </Box>
       ) : sessionStatus.value === Connected ? (
-        <MusicSheet />
+        <div>
+          <MusicSheet/>
+          {pianoRoll === true ? (<div><PixiCanvas gridLineColor={0x333333}
+        blackGridBgColor={0x1e1e1e}
+        whiteGridBgColor={0x282828}
+        
+        ref={playbackRef}/> 
+        {/* <ButtonGroup/>  */}
+        <button
+        onClick={() => {
+          handleSetNoteData([
+            ["0:0:0", "F5", ""],
+            ["0:0:0", "C4", "2n"],
+            ["0:0:0", "D4", "2n"],
+            ["0:0:0", "E4", "2n"],
+            ["0:2:0", "B4", "4n"],
+            ["0:3:0", "A#4", "4n"],
+            ["0:0:0", "F2", ""]
+          ]);
+        }}
+      >
+        Update noteData
+      </button>
+        </div>):(<div></div>)}
+         </div>
       ) : (
         <Home />
       )}
+
+        
+
     </Container>
   );
 };

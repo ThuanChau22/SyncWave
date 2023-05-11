@@ -8,7 +8,14 @@ import { ThemeProvider } from '@mui/material/styles';
 import { store } from "redux/store";
 import App from "App";
 
+
+import * as pixi from 'pixi.js';
+
 const theme = createTheme();
+
+
+
+
 
 const root = createRoot(document.getElementById("root"));
 root.render(

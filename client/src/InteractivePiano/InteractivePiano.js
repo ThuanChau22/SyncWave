@@ -1,13 +1,17 @@
-import React from 'react';
-import Piano from './lib';
-import './InteractivePiano.css';
+import React, { useState } from "react";
+import Piano from "./lib";
+import _ from 'lodash';
+import "./InteractivePiano.css";
+
+import { Button } from "@mui/material";
 
 function PianoContainer({ children }) {
   return (
     <div
-      className={'interactive-piano__piano-container'}
-      onMouseDown={event => event.preventDefault()}
+      className={"interactive-piano__piano-container"}
+      onMouseDown={(event) => event.preventDefault()}
     >
+      {/* <div style={{marginLeft: 10}}/> */}
       {children}
     </div>
   );
@@ -15,13 +19,14 @@ function PianoContainer({ children }) {
 
 function AccidentalKey({ isPlaying, text, eventHandlers }) {
   return (
-    <div className={'interactive-piano__accidental-key__wrapper'}>
+    <div className={"interactive-piano__accidental-key__wrapper"}>
       <button
-        className={`interactive-piano__accidental-key ${isPlaying ? 'interactive-piano__accidental-key--playing' : ''
-          }`}
+        className={`interactive-piano__accidental-key ${
+          isPlaying ? "interactive-piano__accidental-key--playing" : ""
+        }`}
         {...eventHandlers}
       >
-        <div className={'interactive-piano__text'}>{text}</div>
+        <div className={"interactive-piano__text"}>{text}</div>
       </button>
     </div>
   );
@@ -30,11 +35,12 @@ function AccidentalKey({ isPlaying, text, eventHandlers }) {
 function NaturalKey({ isPlaying, text, eventHandlers }) {
   return (
     <button
-      className={`interactive-piano__natural-key ${isPlaying ? 'interactive-piano__natural-key--playing' : ''
-        }`}
+      className={`interactive-piano__natural-key ${
+        isPlaying ? "interactive-piano__natural-key--playing" : ""
+      }`}
       {...eventHandlers}
     >
-      <div className={'interactive-piano__text'}>{text}</div>
+      <div className={"interactive-piano__text"}>{text}</div>
     </button>
   );
 }
@@ -64,47 +70,61 @@ function PianoKey({
   return (
     <KeyComponent
       isPlaying={isNotePlaying}
-      text={keyboardShortcuts.join(' / ')}
+      text={keyboardShortcuts.join(" / ")}
       eventHandlers={eventHandlers}
     />
   );
 }
 
+
+
+const DURATION_UNIT = 0.2;
+const DEFAULT_NOTE_DURATION = DURATION_UNIT;
+
 export default function InteractivePiano({ userId }) {
+
   return (
-    <PianoContainer >
-      <Piano
-        userId={userId}
-        startNote={'C4'}
-        endNote={'B5'}
-        renderPianoKey={PianoKey}
-        keyboardMap={{
-          Q: 'C4',
-          2: 'C#4',
-          W: 'D4',
-          3: 'D#4',
-          E: 'E4',
-          R: 'F4',
-          5: 'F#4',
-          T: 'G4',
-          6: 'G#4',
-          Y: 'A4',
-          7: 'A#4',
-          U: 'B4',
-          V: 'C5',
-          G: 'C#5',
-          B: 'D5',
-          H: 'D#5',
-          N: 'E5',
-          M: 'F5',
-          K: 'F#5',
-          ',': 'G5',
-          L: 'G#5',
-          '.': 'A5',
-          ';': 'A#5',
-          '/': 'B5',
-        }}
-      />
-    </PianoContainer>
+    <div style={{ display: "flex", alignItems: "start" }}>
+      
+      {/* <Button onClick={onClickPlay}>Play</Button>
+          <Button onClick={onClickStop}>Stop</Button>
+          <Button onClick={onClickClear}>Clear</Button>
+          <div>{JSON.stringify(recording.events)}</div> */}
+      <PianoContainer>
+        <Piano
+      
+          userId={userId}
+          startNote={"C4"}
+          endNote={"B5"}
+          renderPianoKey={PianoKey}
+          keyboardMap={{
+            Q: "C4",
+            2: "C#4",
+            W: "D4",
+            3: "D#4",
+            E: "E4",
+            R: "F4",
+            5: "F#4",
+            T: "G4",
+            6: "G#4",
+            Y: "A4",
+            7: "A#4",
+            U: "B4",
+            V: "C5",
+            G: "C#5",
+            B: "D5",
+            H: "D#5",
+            N: "E5",
+            M: "F5",
+            K: "F#5",
+            ",": "G5",
+            L: "G#5",
+            ".": "A5",
+            ";": "A#5",
+            "/": "B5",
+          }}
+        />
+      </PianoContainer>
+    </div>
   );
 }

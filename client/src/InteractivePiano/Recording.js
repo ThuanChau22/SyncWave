@@ -1,47 +1,55 @@
+import { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
+import { Button } from "@mui/material";
 import { Container } from "@mui/material";
 import { Typography } from "@mui/material";
-import { useState, useEffect, useRef } from "react";
 
-import InteractivePiano from "../InteractivePiano/InteractivePiano";
-import PixiCanvas from "InteractivePiano/PianoRoll/PixiCanvas";
-import * as pixi from "pixi.js";
+import { selectParticipants } from "redux/slices/participantSlice";
+import { sessionStateSetStatus } from "redux/slices/sessionSlice";
+import { selectSessionId } from "redux/slices/sessionSlice";
+import { selectSessionStatus } from "redux/slices/sessionSlice";
+
+import { selectMidiMessageMessage } from "redux/slices/midiMessageSlice";
+import Participant from "components/Participant";
+
+import PianoRoll from "./PianoRoll/PianoRoll";
 
 
+export const Recording = () => {
+ 
 
-const Participant = ({ userId, app }) => {
 
   const [state, setState] = useState(0);
   const [noteData, setNoteData] = useState([]);
   const playbackRef = useRef();
 
 
-
   return (
     <Container
-      maxWidth="md"
       sx={{
-        marginBottom: 3,
+        marginTop: 5,
         alignItems: "center",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <Box
-        sx={{
-          marginTop: 5,
-          marginBottom: 2,
-        }}
-      >
-        <Typography>USER ID: {userId}</Typography>
-      </Box>
-      <InteractivePiano userId={userId} />
-      <PixiCanvas 
+      <Typography variant="h4" component="h1" gutterBottom>
+        {" "}
+        Recording:{" "}
+      </Typography>
+      <PianoRoll
+        width={810}
+        height={400}
+        zoom={6}
+        // resolution={2}
         gridLineColor={0x333333}
         blackGridBgColor={0x1e1e1e}
         whiteGridBgColor={0x282828}
+        noteData={noteData}
         ref={playbackRef}
-        /> 
+      />
       <button onClick={() => setState(state + 1)}>set state</button>
       <p>State: {state}</p>
       <button
@@ -84,5 +92,3 @@ const Participant = ({ userId, app }) => {
     </Container>
   );
 };
-
-export default Participant;

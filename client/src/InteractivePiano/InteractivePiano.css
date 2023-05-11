@@ -1,4 +1,5 @@
 .interactive-piano__piano-container {
+  
   display: inline-flex;
   box-sizing: border-box;
   border-top: 10px solid #ed5276;

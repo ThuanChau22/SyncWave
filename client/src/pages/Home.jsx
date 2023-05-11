@@ -18,7 +18,7 @@ const axiosInstance = axios.create({ baseURL: REACT_APP_API_DOMAIN || "/" });
 const sessionAPI = "/api/session";
 
 const Home = () => {
-  const [sessionId, setSessionId] = useState("");
+  const [sessionId, setSessionId] = useState("TEST");
   const [createLoading, setCreateLoading] = useState(false);
   const [joinLoading, setJoinLoading] = useState(false);
   const dispatch = useDispatch();
