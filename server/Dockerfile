@@ -3,4 +3,4 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm clean-install --omit=dev
 COPY . .
-CMD ["npm","start"]
+CMD ["npm","run", "prod"]
