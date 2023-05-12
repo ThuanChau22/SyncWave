@@ -11,7 +11,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Set CORS Policy
-app.use(cors({ origin: WEB_DOMAIN }));
+// app.use(cors({ origin: WEB_DOMAIN }));
+app.use(cors());
 
 // Set security-related HTTP response headers
 app.use(helmet());
