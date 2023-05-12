@@ -1,0 +1,60 @@
+{
+  "steps": [
+    {
+      "name": "bash",
+      "args": [
+        "-c",
+        "set | grep -E 'PORT|WEB_DOMAIN|KAFKA_SERVER_URL|KAFKA_USER|KAFKA_PASS' > .env"
+      ],
+      "env": [
+        "PORT=${_PORT}",
+        "WEB_DOMAIN=${_WEB_DOMAIN}",
+        "KAFKA_SERVER_URL=${_KAFKA_SERVER_URL}",
+        "KAFKA_USER=${_KAFKA_USER}",
+        "KAFKA_PASS=${_KAFKA_PASS}"
+      ]
+    },
+    {
+      "name": "gcr.io/cloud-builders/docker",
+      "args": [
+        "build",
+        "-t",
+        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$REVISION_ID",
+        "."
+      ]
+    },
+    {
+      "name": "gcr.io/cloud-builders/docker",
+      "args": [
+        "push",
+        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$REVISION_ID"
+      ]
+    },
+    {
+      "name": "gcr.io/cloud-builders/gcloud",
+      "args": [
+        "run",
+        "deploy",
+        "${_SERVICE_NAME}",
+        "--image",
+        "gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$REVISION_ID",
+        "--region",
+        "us-central1",
+        "--port",
+        "${_PORT}",
+        "--allow-unauthenticated"
+      ]
+    }
+  ],
+  "images": [
+    "gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$REVISION_ID"
+  ],
+  "substitutions": {
+    "_PORT": "<port_number>",
+    "_WEB_DOMAIN": "<web_domain>",
+    "_KAFKA_SERVER_URL": "<kafka_server_url>",
+    "_KAFKA_USER": "<kafka_user>",
+    "_KAFKA_PASS": "<kafka_pass>",
+    "_SERVICE_NAME": "<service_name>"
+  }
+}

@@ -1,8 +1,4 @@
-import React, { useRef, useEffect, useState, useLayoutEffect } from "react";
-
-import { animated, useSpring, config } from "react-spring";
-
-import styled, { keyframes } from "styled-components";
+import React, { useRef, useEffect, useState } from "react";
 
 import { useSelector } from "react-redux";
 import { selectMidiMessageMessage } from "redux/slices/midiMessageSlice";
@@ -114,10 +110,9 @@ function PianoRoll() {
         resizeCanvasToDisplaySize();
         drawPianoGrid();
 
-        for(var i = 0; i < notesToDraw.length; i++)
-        {
+        for (var i = 0; i < notesToDraw.length; i++) {
           const noteToDraw = notesToDraw[i];
-          
+
           drawNote(noteToDraw[0], noteToDraw[1], noteToDraw[2]);
         }
       }
@@ -133,8 +128,7 @@ function PianoRoll() {
     const interval = setInterval(() => {
       setTimer(prevTimer => prevTimer + 1);
       //console.log("notestoDraw length: " + notesToDraw.length);
-      for(var i = 0; i < notesToDraw.length; i++)
-      {
+      for (var i = 0; i < notesToDraw.length; i++) {
         const newNotesToDraw = [...notesToDraw];
         newNotesToDraw[i][2] += 1;
         setNotesToDraw(newNotesToDraw);
@@ -149,29 +143,25 @@ function PianoRoll() {
   }, [notesToDraw]);
 
 
- 
+
   useEffect(() => {
     if (midiMessage.value) {
       console.log(midiMessage);
 
-      const {pitch, status, velocity} = midiMessage.value;
+      const { pitch, status, velocity } = midiMessage.value;
 
-      if(velocity > 0)
-      {
-        
+      if (velocity > 0) {
+
         //if(notesToDraw.length === 0) setNotesToRender(!notesToRender);
         const x = 0;
         const y = pitch % 60;
         const length = 1;
         setNotesToDraw([...notesToDraw, [x, y, length]]);
       }
-      else 
-      {
-        for(var i = 0; i < notesToDraw.length; i++)
-        {
+      else {
+        for (var i = 0; i < notesToDraw.length; i++) {
           const noteToDraw = notesToDraw[i];
-          if(noteToDraw[1] === pitch % 60)
-          {
+          if (noteToDraw[1] === pitch % 60) {
             notesToDraw.splice(i, 1);
           }
         }
@@ -184,8 +174,8 @@ function PianoRoll() {
 
 
   return (
-    
-      <div><div>Timer: {timer} seconds</div>
+
+    <div><div>Timer: {timer} seconds</div>
       <button onClick={() => setNotesToRender(!notesToRender)}>{notesToRender ? ("RENDER NOTE ON ") : ("SINGLE NOTE OFF")}</button>
       <canvas ref={canvasRef} width={800} height={400} /></div>
 

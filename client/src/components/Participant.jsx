@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 import { Container } from "@mui/material";
-import { Typography } from "@mui/material";
 
 import InteractivePiano from "../InteractivePiano/InteractivePiano";
 import PianoRoll from "../InteractivePiano/PianoRoll"
@@ -8,7 +7,6 @@ import PianoRoll from "../InteractivePiano/PianoRoll"
 const Participant = ({ userId }) => {
   return (
     <Container
-      //maxWidth="md"
       sx={{
         marginBottom: 3,
         alignItems: "start",
@@ -19,21 +17,18 @@ const Participant = ({ userId }) => {
         borderRadius: 5,
         shadowBlur: 1,
         shadowColor: "rgba(0, 0, 0, 0.25)",
-        position: "absolute",
+        position: "relative",
         width: "100%",
-       
       }}
-      maxWidth= {false}
+      maxWidth={false}
     >
-
-    
       <InteractivePiano userId={userId} />
       <Box
         sx={{
           marginLeft: 1,
         }}
       />
-      <PianoRoll/>
+      <PianoRoll />
     </Container>
   );
 };

@@ -49,7 +49,7 @@ router.get("/", async (req, res) => {
  */
 router.post("/", async (_, res) => {
   try {
-    const sessionId = "TEST"; // encode(Buffer.from(uuid()));
+    const sessionId = encode(Buffer.from(uuid()));
     const userId = encode(Buffer.from(uuid()));
     const topicIds = {
       userStatus: kafkaService.getTopicId({
