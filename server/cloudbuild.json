@@ -4,7 +4,7 @@
       "name": "bash",
       "args": [
         "-c",
-        "set | grep -E 'PORT|WEB_DOMAIN|KAFKA_SERVER_URL|KAFKA_USER|KAFKA_PASS' > .env"
+        "set | grep -E 'PORT|WEB_DOMAIN|KAFKA_SERVER_URL|KAFKA_USER|KAFKA_PASS' > server/.env"
       ],
       "env": [
         "PORT=${_PORT}",
@@ -20,7 +20,7 @@
         "build",
         "-t",
         "gcr.io/$PROJECT_ID/${_SERVICE_NAME}:$REVISION_ID",
-        "."
+        "./server"
       ]
     },
     {
