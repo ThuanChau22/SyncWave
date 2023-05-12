@@ -121,7 +121,7 @@ function PianoRoll({ userId }) {
     initializeCanvas();
 
 
-  }, [notesToDraw, notesToRender]);
+  }, [notesToRender]);
 
 
   useEffect(() => {
@@ -140,7 +140,7 @@ function PianoRoll({ userId }) {
     return () => {
       clearInterval(interval); // Clean up the interval when the component unmounts
     };
-  }, [notesToDraw, notesToRender]);
+  }, [notesToDraw]);
 
 
 
@@ -167,7 +167,7 @@ function PianoRoll({ userId }) {
         setNotesToRender(!notesToRender);
       }
     }
-  }, [midiMessage, notesToDraw, notesToRender, userId]);
+  }, [midiMessage]);
 
 
   return (
@@ -177,6 +177,7 @@ function PianoRoll({ userId }) {
       {/* <button onClick={() => setNotesToRender(!notesToRender)}>{notesToRender ? ("RENDER NOTE ON ") : ("SINGLE NOTE OFF")}</button> */}
       <canvas ref={canvasRef} width={800} height={400} />
     </div>
+
   );
 }
 
