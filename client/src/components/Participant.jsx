@@ -28,7 +28,7 @@ const Participant = ({ userId }) => {
           marginLeft: 1,
         }}
       />
-      <PianoRoll />
+      <PianoRoll userId={userId} />
     </Container>
   );
 };

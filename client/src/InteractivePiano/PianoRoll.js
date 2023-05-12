@@ -6,7 +6,7 @@ import { selectMidiMessageMessage } from "redux/slices/midiMessageSlice";
 import "./PianoRoll.css";
 
 
-function PianoRoll() {
+function PianoRoll({ userId }) {
   const canvasRef = useRef(null);
 
   const [notesToRender, setNotesToRender] = useState(false);
@@ -146,29 +146,26 @@ function PianoRoll() {
 
   useEffect(() => {
     if (midiMessage.value) {
-      console.log(midiMessage);
-
-      const { pitch, status, velocity } = midiMessage.value;
-
-      if (velocity > 0) {
-
-        //if(notesToDraw.length === 0) setNotesToRender(!notesToRender);
-        const x = 0;
-        const y = pitch % 60;
-        const length = 1;
-        setNotesToDraw([...notesToDraw, [x, y, length]]);
-      }
-      else {
-        for (var i = 0; i < notesToDraw.length; i++) {
-          const noteToDraw = notesToDraw[i];
-          if (noteToDraw[1] === pitch % 60) {
-            notesToDraw.splice(i, 1);
+      const { userId: senderUserId, value } = midiMessage;
+      if (userId === senderUserId) {
+        const { pitch, velocity } = value || {};
+        if (velocity > 0) {
+          //if(notesToDraw.length === 0) setNotesToRender(!notesToRender);
+          const x = 0;
+          const y = pitch % 60;
+          const length = 1;
+          setNotesToDraw([...notesToDraw, [x, y, length]]);
+        } else {
+          for (var i = 0; i < notesToDraw.length; i++) {
+            const noteToDraw = notesToDraw[i];
+            if (noteToDraw[1] === pitch % 60) {
+              notesToDraw.splice(i, 1);
+            }
           }
+          //setClearNotes(!clearNotes);
         }
-        //setClearNotes(!clearNotes);
+        setNotesToRender(!notesToRender);
       }
-      setNotesToRender(!notesToRender);
-      console.log(notesToDraw);
     }
   }, [midiMessage]);
 
