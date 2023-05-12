@@ -101,7 +101,7 @@ function ResponsiveAppBar() {
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
-             
+
             </Menu>
           </Box>
           <PianoOutlinedIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -134,40 +134,45 @@ function ResponsiveAppBar() {
               </Button>
             ))}
           </Box>
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            sx={{
-              mr: 4,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 800,
-              letterSpacing: '.2rem',
-              color: 'inherit',
-              textDecoration: 'none',
-              fontSize: '0.9rem',
-            }}
-          >
-            User ID: {userId}
-          </Typography>
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 800,
-              letterSpacing: '.2rem',
-              color: 'inherit',
-              textDecoration: 'none',
-              fontSize: '0.9rem',
-            }}
-          >
-            Session ID: {sessionId}
-          </Typography>
+          <Container sx={{
+            display: "flex",
+            flexDirection: "column",
+          }} >
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              sx={{
+                mr: 4,
+                display: { xs: 'none', md: 'flex' },
+                fontFamily: 'monospace',
+                fontWeight: 800,
+                letterSpacing: '.2rem',
+                color: 'inherit',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+              }}
+            >
+              User ID: {userId}
+            </Typography>
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              sx={{
+                mr: 2,
+                display: { xs: 'none', md: 'flex' },
+                fontFamily: 'monospace',
+                fontWeight: 800,
+                letterSpacing: '.2rem',
+                color: 'inherit',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+              }}
+            >
+              Session ID: {sessionId}
+            </Typography>
+          </Container>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
